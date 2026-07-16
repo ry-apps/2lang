@@ -62,11 +62,11 @@ select = [
 ]
 
 [tool.ty.environment]
-extra-paths = ["src/twolang"]
+extra-paths = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src/twolang"]
+pythonpath = ["src"]
 asyncio_default_fixture_loop_scope = "function"
 markers = [
     "integration: tests that hit real external services",
