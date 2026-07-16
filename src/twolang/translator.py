@@ -37,11 +37,11 @@ class Translator:
     async def translate(self, text: str) -> str:
         head = text[: len(text) - len(text.lstrip())]
         tail = text[len(text.rstrip()) :]
-        text = text.strip()
-        if not text:
+        core = text.strip()
+        if not core:
             return text
 
-        sentences = list(split_by_sentences(text, max_chars=4500))
+        sentences = list(split_by_sentences(core, max_chars=4500))
         async with asyncio.TaskGroup() as tg:
             tasks = [tg.create_task(self._translate(s)) for s in sentences]
         return head + " ".join(task.result() for task in tasks) + tail

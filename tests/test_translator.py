@@ -17,3 +17,9 @@ async def test_translate_basic_translation():
     translator = Translator(source_lang="en", target_lang="pl")
     result = await translator.translate("Hello, how are you?")
     assert detect(result) == "pl"
+
+
+@pytest.mark.asyncio
+async def test_translate_empty_text_makes_no_requests():
+    translator = Translator(target_lang="en")
+    assert await translator.translate("  ") == "  "
