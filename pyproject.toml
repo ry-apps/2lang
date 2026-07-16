@@ -3,11 +3,17 @@ name = "2lang"
 version = "0.1.0"
 description = "Convert documents to Markdown and translate them"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.14.2"
 dependencies = [
     "deep-translator>=1.11.4",
     "langdetect>=1.0.9",
     "loguru>=0.7.3",
+    "markdown-it-py>=3",
+    "mdformat>=0.7.22",
+    "mdformat-tables>=1",
+    "mdit-py-plugins>=0.4",
+    "mineru[core]>=3.4.4",
+    "mineru[mlx]>=3.4.4; sys_platform == 'darwin'",
     "tenacity>=9.1.4",
     "tqdm>=4.68.4",
 ]
