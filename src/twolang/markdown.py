@@ -16,6 +16,7 @@ from markdown_it import MarkdownIt
 from markdown_it.token import Token
 from mdformat.renderer import MDRenderer
 from mdit_py_plugins.dollarmath import dollarmath_plugin
+from tqdm import tqdm
 
 from twolang.translator import Translator
 
@@ -44,16 +45,19 @@ class _MathExtension:
     }
 
 
-async def translate_token(token: Token, translator: Translator) -> None:
-    token.content = await translator.translate(token.content)
-
-
 async def translate_markdown(md_text: str, translator: Translator) -> str:
     parser = get_parser()
     tokens = parser.parse(md_text, {})
 
     async with asyncio.TaskGroup() as tg:
-        for token in get_tokens_to_translate(tokens):
+        to_translate = list(get_tokens_to_translate(tokens))
+        pbar = tqdm(total=len(to_translate), desc="translating", unit="token")
+
+        async def translate_token(token: Token, translator: Translator) -> None:
+            token.content = await translator.translate(token.content)
+            pbar.update(1)
+
+        for token in to_translate:
             tg.create_task(translate_token(token, translator))
 
     options = dict(parser.options) | {"parser_extension": [mdformat_tables, _MathExtension]}
