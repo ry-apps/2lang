@@ -1,7 +1,7 @@
 import pytest
-from markdown import get_parser, get_tokens_to_translate
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
+from translate import get_parser, get_tokens_to_translate
 
 
 @pytest.fixture
