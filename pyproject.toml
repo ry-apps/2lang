@@ -9,6 +9,7 @@ dependencies = [
     "langdetect>=1.0.9",
     "loguru>=0.7.3",
     "tenacity>=9.1.4",
+    "tqdm>=4.68.4",
 ]
 
 [dependency-groups]

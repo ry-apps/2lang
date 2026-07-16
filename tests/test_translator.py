@@ -1,7 +1,7 @@
 import pytest
-from langdetect import DetectorFactory, detect, detect_langs
+from langdetect import DetectorFactory, detect
 
-from twolang.translator import Translator, detect_language
+from twolang.translator import Translator, detect_language, split_chunks
 
 DetectorFactory.seed = 0  # deterministic language detection
 
@@ -16,4 +16,6 @@ def test_translate_basic_translation():
     translator = Translator(source_lang="en", target_lang="pl")
     result = translator.translate("Hello, how are you?")
     assert detect(result) == "pl"
+
+
 
