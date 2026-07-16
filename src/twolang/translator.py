@@ -1,4 +1,4 @@
-"""Translation backend: Google Translate free web endpoint via deep-translator."""
+"""Translation backend: Google Translate via deep-translator."""
 
 import asyncio
 import logging
