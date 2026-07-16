@@ -1,6 +1,6 @@
 # 2lang
 
-[![CI](https://github.com/yushkou/2lang/actions/workflows/ci.yml/badge.svg)](https://github.com/yushkou/2lang/actions/workflows/ci.yml)
+[![CI](https://github.com/ry-apps/2lang/actions/workflows/ci.yml/badge.svg)](https://github.com/yushkou/ry-apps/actions/workflows/ci.yml)
 
 Convert documents to Markdown with [MinerU](https://github.com/opendatalab/mineru), then translate
 the prose to a target language — keeping code blocks, formulas, links and table structure intact.
