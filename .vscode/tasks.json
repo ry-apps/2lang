@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "clear-console",
+            "type": "shell",
+            "command": "clear && echo \"[$(date '+%Y-%m-%d %H:%M:%S')]\" && echo"
+        },
+        {
+            "label": "ruff-format",
+            "type": "shell",
+            "command": "uv run ruff format ."
+        },
+        {
+            "label": "ruff-check-and-fix",
+            "type": "shell",
+            "command": "uv run ruff check . --fix"
+        },
+        {
+            "label": "ty-check",
+            "type": "shell",
+            "command": "uv run ty check ."
+        },
+        {
+            "label": "check-all",
+            "dependsOn": ["clear-console", "ruff-format","ruff-check-and-fix", "ty-check"],
+            "dependsOrder": "sequence"
+        }
+    ]
+}

@@ -1,7 +1,46 @@
 [project]
 name = "2lang"
 version = "0.1.0"
-description = "Document parsing and translation"
+description = "Convert documents to Markdown and translate them"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
+    "ruff>=0.15.0",
+    "ty>=0.0.16",
+]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 120 # default is 88
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle (errors)
+    "W", # pycodestyle (warnings)
+    "F", # Pyflakes
+    "I", # isort
+    "S", # flake8-bandit
+    "B", # flake8-bugbear
+    "SIM", # flake8-simplify
+    "PERF", # Perflint
+    "FURB", # Refurb
+    "RUF", # Ruff-specific rules
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/test_*.py" = [
+    "S101", # Use of assert detected
+]
+
+[tool.ty.environment]
+extra-paths = ["src/twolang"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src/twolang"]
