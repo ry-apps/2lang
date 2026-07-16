@@ -1,10 +1,11 @@
 """Translation backend: Google Translate free web endpoint via deep-translator."""
 
-import time
+import logging
 
 from deep_translator import GoogleTranslator
 from langdetect import DetectorFactory, detect
 from loguru import logger
+from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
 
 DetectorFactory.seed = 0  # deterministic language detection
 
@@ -41,6 +42,11 @@ class Translator:
         if not core:
             return text
         if core not in self._cache:
+            if len(core) > _MAX_CHARS:
+                half = core.rfind(" ", 0, _MAX_CHARS)
+                half = half if half > 0 else _MAX_CHARS
+                return self._translate(core[:half]) + " " + self._translate(core[half:])
+
             self._cache[core] = self._translate(core)
             self.segments += 1
             if self.segments % 50 == 0:
@@ -50,19 +56,13 @@ class Translator:
         tail = text[len(text.rstrip()) :]
         return head + self._cache[core] + tail
 
-    def _translate(self, text: str) -> str:
-        if len(text) > _MAX_CHARS:
-            half = text.rfind(" ", 0, _MAX_CHARS)
-            half = half if half > 0 else _MAX_CHARS
-            return self._translate(text[:half]) + " " + self._translate(text[half:])
-        last_error: Exception | None = None
-        for attempt in range(1, _RETRIES + 1):
-            google_translator = GoogleTranslator(source=self.source_lang, target=self.target_lang)
-            try:
-                result = google_translator.translate(text)
-                return result if result is not None else text
-            except Exception as e:  # network hiccups / transient endpoint errors
-                last_error = e
-                logger.warning("translation attempt {}/{} failed: {}", attempt, _RETRIES, e)
-                time.sleep(attempt)
-        raise RuntimeError(f"translation failed after {_RETRIES} attempts") from last_error
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True,
+    )
+    def _translate(self, segment: str) -> str:
+        google_translator = GoogleTranslator(source=self.source_lang, target=self.target_lang)
+        result = google_translator.translate(segment)
+        return result if result is not None else segment
