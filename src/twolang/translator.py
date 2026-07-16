@@ -1,12 +1,12 @@
 """Translation backend: Google Translate free web endpoint via deep-translator."""
 
+import asyncio
 import logging
 
 from deep_translator import GoogleTranslator
 from langdetect import DetectorFactory, detect
 from loguru import logger
 from tenacity import before_sleep_log, retry, stop_after_attempt, wait_exponential
-from tqdm import tqdm
 
 from twolang.lang import split_by_sentences
 
@@ -29,25 +29,22 @@ def detect_language(sample: str) -> str:
 
 
 class Translator:
-    def __init__(self, *, target_lang: str, source_lang: str | None = None) -> None:
+    def __init__(self, *, target_lang: str, source_lang: str | None = None, max_threads: int = 5) -> None:
         self.source_lang = to_google_code(source_lang) if source_lang else "auto"
         self.target_lang = to_google_code(target_lang)
+        self._semaphore = asyncio.Semaphore(max_threads)
 
-    def translate(self, text: str) -> str:
+    async def translate(self, text: str) -> str:
+        head = text[: len(text) - len(text.lstrip())]
+        tail = text[len(text.rstrip()) :]
         text = text.strip()
         if not text:
             return text
 
-        head = text[: len(text) - len(text.lstrip())]
-        tail = text[len(text.rstrip()) :]
-        sentences = split_by_sentences(text, max_chars=4500)
-        result = []
-
-        for sentence in tqdm(sentences):
-            translation = self._translate(sentence)
-            result.append(translation)
-
-        return head + " ".join(result) + tail
+        sentences = list(split_by_sentences(text, max_chars=4500))
+        async with asyncio.TaskGroup() as tg:
+            tasks = [tg.create_task(self._translate(s)) for s in sentences]
+        return head + " ".join(task.result() for task in tasks) + tail
 
     @retry(
         stop=stop_after_attempt(3),
@@ -55,7 +52,13 @@ class Translator:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True,
     )
-    def _translate(self, segment: str) -> str:
-        google_translator = GoogleTranslator(source=self.source_lang, target=self.target_lang)
-        result = google_translator.translate(segment)
-        return result if result is not None else segment
+    async def _translate(self, text: str) -> str:
+        async with self._semaphore:
+            result = await asyncio.to_thread(
+                GoogleTranslator(
+                    source=self.source_lang,
+                    target=self.target_lang,
+                ).translate,
+                text,
+            )
+        return result if result is not None else text

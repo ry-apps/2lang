@@ -16,6 +16,7 @@ dependencies = [
 dev = [
     "pre-commit>=4.5.1",
     "pytest>=9.0.2",
+    "pytest-asyncio>=1.4.0",
     "ruff>=0.15.0",
     "ty>=0.0.16",
 ]
@@ -49,3 +50,7 @@ extra-paths = ["src/twolang"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src/twolang"]
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "integration: tests that hit real external services",
+]
