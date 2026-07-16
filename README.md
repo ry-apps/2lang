@@ -1,6 +1,6 @@
 # 2lang
 
-[![CI](https://github.com/ry-apps/2lang/actions/workflows/ci.yml/badge.svg)](https://github.com/yushkou/ry-apps/actions/workflows/ci.yml)
+[![CI](https://github.com/ry-apps/2lang/actions/workflows/ci.yml/badge.svg)](https://github.com/ry-apps/2lang/actions/workflows/ci.yml)
 
 Convert documents to Markdown with [MinerU](https://github.com/opendatalab/mineru), then translate
 the prose to a target language — keeping code blocks, formulas, links and table structure intact.
@@ -101,3 +101,11 @@ uv run pre-commit install      # ruff + ty on every commit
 uv run pytest                  # unit tests (offline)
 uv run pytest -m integration   # tests that hit the real translate endpoint
 ```
+
+## Licensing
+
+2lang is [MIT-licensed](LICENSE). It depends on [MinerU](https://github.com/opendatalab/mineru),
+which is licensed under Apache 2.0 with
+[additional terms](https://github.com/opendatalab/MinerU/blob/master/LICENSE.md)
+(attribution and a commercial-scale threshold). MinerU is not redistributed here — it is
+installed as a regular dependency.
