@@ -9,6 +9,7 @@ the translator.
 """
 
 import asyncio
+import re
 from pathlib import Path
 from typing import Generator
 
@@ -65,6 +66,24 @@ class _MathExtension:
     }
 
 
+HTML_TAG_RE = re.compile(r"(<[^<>]+>)")
+HAS_LETTERS_RE = re.compile(r"[^\W\d_]")
+
+
+async def translate_html_block(html: str, translator: Translator) -> str:
+    """Translate the text nodes of a raw HTML fragment; tags stay verbatim."""
+    parts = HTML_TAG_RE.split(html)  # odd indices are tags
+    async with asyncio.TaskGroup() as tg:
+        tasks = {
+            index: tg.create_task(translator.translate(part))
+            for index, part in enumerate(parts)
+            if index % 2 == 0 and HAS_LETTERS_RE.search(part)
+        }
+    for index, task in tasks.items():
+        parts[index] = task.result()
+    return "".join(parts)
+
+
 async def translate_markdown(md_text: str, translator: Translator) -> str:
     parser = get_parser()
     tokens = parser.parse(md_text, {})
@@ -74,7 +93,10 @@ async def translate_markdown(md_text: str, translator: Translator) -> str:
         pbar = tqdm(total=len(to_translate), desc="translating", unit="token")
 
         async def translate_token(token: Token, translator: Translator) -> None:
-            token.content = await translator.translate(token.content)
+            if token.type == "html_block":
+                token.content = await translate_html_block(token.content, translator)
+            else:
+                token.content = await translator.translate(token.content)
             pbar.update(1)
 
         for token in to_translate:
