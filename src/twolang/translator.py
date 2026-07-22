@@ -29,7 +29,7 @@ def detect_language(sample: str) -> str:
 
 
 class Translator:
-    def __init__(self, *, target_lang: str, source_lang: str | None = None, max_threads: int = 5) -> None:
+    def __init__(self, *, target_lang: str, source_lang: str | None = None, max_threads: int = 1) -> None:
         self.source_lang = to_google_code(source_lang) if source_lang else "auto"
         self.target_lang = to_google_code(target_lang)
         self._semaphore = asyncio.Semaphore(max_threads)
