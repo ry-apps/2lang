@@ -24,7 +24,7 @@ from tqdm import tqdm
 from twolang.translator import Translator, detect_language
 
 
-async def translate(md_files: list[Path], target_lang: str, source_lang: str | None):
+async def translate(md_files: list[Path], target_lang: str, source_lang: str | None, max_threads: int = 10):
     suffix = f".{target_lang}.md"
     for md_file in md_files:
         md_text = md_file.read_text(encoding="utf-8")
@@ -33,7 +33,12 @@ async def translate(md_files: list[Path], target_lang: str, source_lang: str | N
             source_lang = detect_language(sample=md_text)
             logger.info(f"{md_file.name}: auto-detected source language: {source_lang}")
 
-        translator = Translator(source_lang=source_lang, target_lang=target_lang)
+        translator = Translator(
+            source_lang=source_lang,
+            target_lang=target_lang,
+            max_threads=max_threads,
+        )
+
         logger.info(f"{md_file.name}: translating {source_lang} -> {target_lang}")
         translated = await translate_markdown(md_text, translator)
 

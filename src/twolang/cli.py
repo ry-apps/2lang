@@ -37,11 +37,20 @@ def main(
             help="Language of the converted markdown (auto-detected if not specified)",
         ),
     ] = None,
+    max_threads: Annotated[
+        int,
+        typer.Option(
+            "-mt",
+            "--max-threads",
+            help="Maximum number of threads to use for translation (default: 10)",
+        ),
+    ] = 10,
 ) -> None:
     main_flow(
         source_path=path,
         source_lang=source_lang,
         target_lang=target_lang,
+        max_threads=max_threads,
     )
 
 
