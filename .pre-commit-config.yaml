@@ -9,20 +9,13 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
 
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.22
     hooks:
-      - id: ruff
-        name: ruff
-        entry: uv run ruff check
-        language: system
-        types: [python]
-        pass_filenames: true
-        stages: [pre-commit]
+      - id: ruff-format
+      - id: ruff-check
 
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    rev: v0.0.62
+    hooks:
       - id: ty
-        name: ty check
-        entry: uv run ty check
-        language: system
-        types: [python]
-        pass_filenames: false
-        stages: [pre-commit]
