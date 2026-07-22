@@ -24,5 +24,5 @@ repos:
         entry: uv run ty check
         language: system
         types: [python]
-        pass_filenames: true
+        pass_filenames: false
         stages: [pre-commit]
