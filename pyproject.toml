@@ -1,6 +1,6 @@
 [project]
 name = "2lang"
-version = "0.0.0"
+version = "0.1.0"
 description = "Convert documents to Markdown and translate them"
 readme = "README.md"
 requires-python = ">=3.14.2"
