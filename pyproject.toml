@@ -1,6 +1,6 @@
 [project]
 name = "2lang"
-version = "0.1.0"
+version = "0.0.0"
 description = "Convert documents to Markdown and translate them"
 readme = "README.md"
 requires-python = ">=3.14.2"
@@ -71,3 +71,22 @@ asyncio_default_fixture_loop_scope = "function"
 markers = [
     "integration: tests that hit real external services",
 ]
+
+[tool.semantic_release]
+tag_format = "v{version}"
+version_toml = ["pyproject.toml:project.version"]
+commit_parser = "conventional"
+build_command = """
+uv lock --upgrade-package "$PACKAGE_NAME"
+git add uv.lock
+uv build
+"""
+allow_zero_version = true
+major_on_zero = false
+
+[tool.semantic_release.changelog]
+exclude_commit_patterns = ["^chore", "^ci", "^build\\(deps\\)"]
+
+[tool.semantic_release.changelog.default_templates]
+changelog_file = "CHANGELOG.md"
+mask_initial_release = true

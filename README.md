@@ -102,6 +102,17 @@ uv run pytest                  # unit tests (offline)
 uv run pytest -m integration   # tests that hit the real translate endpoint
 ```
 
+### Releasing
+
+Versions and [`CHANGELOG.md`](CHANGELOG.md) are generated from commit history with
+[python-semantic-release](https://python-semantic-release.readthedocs.io/), run manually:
+
+```bash
+uv run semantic-release version --print   # preview the next version
+uv run semantic-release -v version --no-push --no-vcs-release --no-commit  # run locally
+uv run semantic-release version           # cut the release (needs GH_TOKEN)
+```
+
 ## Licensing
 
 2lang is [MIT-licensed](LICENSE). It depends on [MinerU](https://github.com/opendatalab/mineru),
